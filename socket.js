@@ -12,11 +12,10 @@ const io = new Server(httpServer, {
     credentials: true,
   },
 });
-
-
 const prisma = new PrismaClient();
 
-let onlineUsers = new Set();
+
+// let onlineUsers = new Set();
 io.on("connection", (socket) => {
     console.log(`user connected ${socket.id}`)
     socket.on("set_user_id", async (userId) => {
@@ -33,14 +32,8 @@ io.on("connection", (socket) => {
     });
   
     socket.on("check_online_status", () => {
-      const isOnline = onlineUsers.has(socket.userId);
-      socket.emit("online_status", isOnline);
-    });
-  
-    socket.on("join_room", (roomId) => {
-      socket.join(roomId);
-      socket.roomId = roomId;
-      console.log(`User Id chat with ${socket.userId} joined room ${roomId}`);
+      // const isOnline = onlineUsers.has(socket.userId);
+      // socket.emit("online_status", isOnline);
     });
   
     socket.on("clerkuserId", async (ClerkuserId) => {
@@ -49,9 +42,9 @@ io.on("connection", (socket) => {
         select: { id: true },
       });
       socket.myuserid = me.id;
-      onlineUsers.add(socket.myuserid);
+      // onlineUsers.add(socket.myuserid);
       console.log(`MyuserId ${socket.myuserid}`);
-      console.log("Online users:", Array.from(onlineUsers));
+      // console.log("Online users:", Array.from(onlineUsers));
   
       const messagesFromMeToOther = await prisma.chat.findMany({
         where: { sender: socket.myuserid, receiver: socket.userId },
@@ -83,7 +76,7 @@ io.on("connection", (socket) => {
   
     socket.on("disconnect", () => {
       console.log(`disconnected: ${socket.myuserid}`);
-      onlineUsers.delete(socket.myuserid);
+      // onlineUsers.delete(socket.myuserid);
     });
   });
 
