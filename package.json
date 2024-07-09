@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index",
-    "build": "npx prisma generate && nodemon index "
+    "build": "nodemon index "
   },
   "author": "",
   "license": "ISC",
