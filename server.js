@@ -95,7 +95,7 @@ io.on("connection", (socket) => {
       });
 
       socket.emit("receive_msg", message);
-      const receiverSocketId =userSockets.has(socket.userId); ;
+      const receiverSocketId =onlineUsers.has(socket.userId); ;
       if (receiverSocketId) {
         io.to(userSockets[socket.userId]).emit("receive_msg", message);
       }
