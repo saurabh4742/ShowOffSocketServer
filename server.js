@@ -25,7 +25,6 @@ io.on("connection", (socket) => {
   
   socket.on("set_user_id", async (userId) => {
     socket.userId = userId;
-    userSockets[userId] = socket.id;
     console.log(`User I Chat With: ${socket.userId}`);
     try {
       const UserItalk = await prisma.user.findUnique({
@@ -59,6 +58,8 @@ io.on("connection", (socket) => {
         select: { id: true },
       });
       socket.myuserid = me.id;
+      const myuserid=socket.myuserid
+      userSockets[myuserid] = socket.id;
       onlineUsers.add(socket.myuserid);
       console.log(`MyuserId ${socket.myuserid}`);
       console.log("Online users:", Array.from(onlineUsers));
