@@ -4,8 +4,6 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
-
-console.log('DATABASE_URL:', process.env.DATABASE_URL);
 const prisma = new PrismaClient();
 
 const app = express();
@@ -20,12 +18,14 @@ const io = new Server(server, {
 });
 
 let onlineUsers = new Set();
+const userSockets = {};
 
 io.on("connection", (socket) => {
   console.log(`user connected ${socket.id}`);
   
   socket.on("set_user_id", async (userId) => {
     socket.userId = userId;
+    userSockets[userId] = socket.id;
     console.log(`User I Chat With: ${socket.userId}`);
     try {
       const UserItalk = await prisma.user.findUnique({
@@ -92,7 +92,12 @@ io.on("connection", (socket) => {
           message: IMsgData,
         },
       });
+
       socket.emit("receive_msg", message);
+      const receiverSocketId = userSockets[socket.userId];
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("receive_msg", message);
+      }
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -101,6 +106,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(`disconnected: ${socket.myuserid}`);
     onlineUsers.delete(socket.myuserid);
+    delete userSockets[socket.userId];
   });
 });
 
