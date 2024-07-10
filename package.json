@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "build": "nodemon server.js "
+    "start": "npx prisma validate && npx prisma generate && nodemon server.js",
+    "build": "npx prisma validate && npx prisma generate && nodemon server.js "
   },
   "author": "",
   "license": "ISC",
