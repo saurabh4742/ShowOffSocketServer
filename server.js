@@ -61,6 +61,7 @@ io.on("connection", (socket) => {
       if(socket.myuserid){
       userSockets[socket.myuserid] = socket.id;
       onlineUsers.add(socket.myuserid);
+      io.emit("user_online_status", { userId: socket.myuserid, status: true });
       }
       console.log(`MyuserId ${socket.myuserid}`);
       console.log("Online users:", Array.from(onlineUsers));
@@ -111,6 +112,7 @@ io.on("connection", (socket) => {
     console.log(`disconnected: ${socket.myuserid}`);
     onlineUsers.delete(socket.myuserid);
     delete userSockets[socket.userId];
+    io.emit("user_online_status", { userId: socket.myuserid, status: false });
   });
 });
 
