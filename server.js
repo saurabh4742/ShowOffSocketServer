@@ -58,9 +58,10 @@ io.on("connection", (socket) => {
         select: { id: true },
       });
       socket.myuserid = me.id;
-      const myuserid=socket.myuserid
-      userSockets[myuserid] = socket.id;
+      if(socket.myuserid){
+      userSockets[socket.myuserid] = socket.id;
       onlineUsers.add(socket.myuserid);
+      }
       console.log(`MyuserId ${socket.myuserid}`);
       console.log("Online users:", Array.from(onlineUsers));
 
@@ -95,9 +96,11 @@ io.on("connection", (socket) => {
       });
 
       socket.emit("receive_msg", message);
-      const receiverSocketId =onlineUsers.has(socket.userId); ;
-      if (receiverSocketId) {
-        io.to(userSockets[socket.userId]).emit("receive_msg", message);
+      if (onlineUsers.has(socket.userId)) {
+        const receiverSocketId = userSockets[socket.userId];
+        if (receiverSocketId) {
+          io.to(receiverSocketId).emit("receive_msg", message);
+        }
       }
     } catch (error) {
       console.error("Error sending message:", error);
