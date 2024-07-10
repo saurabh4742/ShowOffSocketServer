@@ -95,9 +95,9 @@ io.on("connection", (socket) => {
       });
 
       socket.emit("receive_msg", message);
-      const receiverSocketId = userSockets[socket.userId];
+      const receiverSocketId =userSockets.has(socket.userId); ;
       if (receiverSocketId) {
-        io.to(receiverSocketId).emit("receive_msg", message);
+        io.to(userSockets[socket.userId]).emit("receive_msg", message);
       }
     } catch (error) {
       console.error("Error sending message:", error);
