@@ -40,10 +40,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("check_online_status", () => {
-    const isOnline = onlineUsers.has(socket.userId);
-    socket.emit("online_status", isOnline);
-  });
 
   socket.on("join_room", (roomId) => {
     socket.join(roomId);
@@ -73,6 +69,10 @@ io.on("connection", (socket) => {
   //   io.emit("user_online_status", { userId: socket.myuserid, status: true });
   // }
   // )
+  socket.on("check_already_online_status", () => {
+    const isOnline = onlineUsers.has(socket.userId);
+    socket.emit("already_online_status", isOnline);
+  });
   socket.on("Give_Me_old_chats",async()=>{
     const messagesFromMeToOther = await prisma.chat.findMany({
       where: { sender: socket.myuserid, receiver: socket.userId },
