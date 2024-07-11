@@ -57,18 +57,15 @@ io.on("connection", (socket) => {
       if(socket.myuserid){
       userSockets[socket.myuserid] = socket.id;
       onlineUsers.add(socket.myuserid);
-      io.emit("user_online_status", { userId: socket.myuserid, status: true });
+      io.emit("user_online_status", { userId: socket.myuserid,imageUrl:me.imageUrl,username:me.FirstName+" "+me.LastName,clerkuserId:me.clerkUserId, status: true });
+      io.emit("current_online_usersID",Array.from(onlineUsers))
       }
       
     } catch (error) {
       console.error("Error fetching clerk user ID:", error);
     }
-  });
+  }); 
 
-  // socket.on("get_user_status",()=>{
-  //   io.emit("user_online_status", { userId: socket.myuserid, status: true });
-  // }
-  // )
   socket.on("check_already_online_status", () => {
     const isOnline = onlineUsers.has(socket.userId);
     socket.emit("already_online_status", isOnline);
@@ -91,6 +88,10 @@ io.on("connection", (socket) => {
 
   })
 
+  socket.on("Give_Me_allChatted_users", async () => {
+      socket.emit("current_online_usersID",Array.from(onlineUsers))
+
+  });
   socket.on("send_msg", async (IMsgData) => {
     console.log(IMsgData, "DATA");
     try {
@@ -119,6 +120,7 @@ io.on("connection", (socket) => {
     onlineUsers.delete(socket.myuserid);
     delete userSockets[socket.userId];
     io.emit("user_online_status", { userId: socket.myuserid, status: false });
+    io.emit("current_online_usersID",Array.from(onlineUsers))
   });
 });
 
