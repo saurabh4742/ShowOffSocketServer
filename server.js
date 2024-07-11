@@ -61,17 +61,18 @@ io.on("connection", (socket) => {
       if(socket.myuserid){
       userSockets[socket.myuserid] = socket.id;
       onlineUsers.add(socket.myuserid);
-
+      io.emit("user_online_status", { userId: socket.myuserid, status: true });
       }
+      
     } catch (error) {
       console.error("Error fetching clerk user ID:", error);
     }
   });
 
-  socket.on("get_user_status",()=>{
-    io.emit("user_online_status", { userId: socket.myuserid, status: true });
-  }
-  )
+  // socket.on("get_user_status",()=>{
+  //   io.emit("user_online_status", { userId: socket.myuserid, status: true });
+  // }
+  // )
   socket.on("Give_Me_old_chats",async()=>{
     const messagesFromMeToOther = await prisma.chat.findMany({
       where: { sender: socket.myuserid, receiver: socket.userId },
