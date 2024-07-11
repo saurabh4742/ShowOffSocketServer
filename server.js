@@ -51,15 +51,13 @@ io.on("connection", (socket) => {
     try {
       const me = await prisma.user.findUnique({
         where: { clerkUserId: ClerkuserId },
-        select: { id: true },
+        select: { id: true, imageUrl: true, FirstName: true, LastName: true, clerkUserId: true },
       });
       socket.myuserid = me.id;
       if(socket.myuserid){
       userSockets[socket.myuserid] = socket.id;
       onlineUsers.add(socket.myuserid);
-      if(me){
-        io.emit("user_online_status", { userId: socket.myuserid,imageUrl:me.imageUrl,username:me.FirstName+" "+me.LastName,clerkuserId:me.clerkUserId, status: true });
-      }
+      io.emit("user_online_status", { userId: socket.myuserid,imageUrl:me.imageUrl,username:me.FirstName+" "+me.LastName,clerkuserId:me.clerkUserId, status: true });
       io.emit("current_online_usersID",Array.from(onlineUsers))
       }
       
