@@ -57,7 +57,9 @@ io.on("connection", (socket) => {
       if(socket.myuserid){
       userSockets[socket.myuserid] = socket.id;
       onlineUsers.add(socket.myuserid);
-      io.emit("user_online_status", { userId: socket.myuserid,imageUrl:me.imageUrl,username:me.FirstName+" "+me.LastName,clerkuserId:me.clerkUserId, status: true });
+      if(me){
+        io.emit("user_online_status", { userId: socket.myuserid,imageUrl:me.imageUrl,username:me.FirstName+" "+me.LastName,clerkuserId:me.clerkUserId, status: true });
+      }
       io.emit("current_online_usersID",Array.from(onlineUsers))
       }
       
