@@ -61,29 +61,34 @@ io.on("connection", (socket) => {
       if(socket.myuserid){
       userSockets[socket.myuserid] = socket.id;
       onlineUsers.add(socket.myuserid);
-      io.emit("user_online_status", { userId: socket.myuserid, status: true });
+
       }
-      console.log(`MyuserId ${socket.myuserid}`);
-      console.log("Online users:", Array.from(onlineUsers));
-
-      const messagesFromMeToOther = await prisma.chat.findMany({
-        where: { sender: socket.myuserid, receiver: socket.userId },
-        orderBy: { sentAt: "asc" },
-      });
-
-      const messagesFromOtherToMe = await prisma.chat.findMany({
-        where: { sender: socket.userId, receiver: socket.myuserid },
-        orderBy: { sentAt: "asc" },
-      });
-
-      const allMessages = [...messagesFromMeToOther, ...messagesFromOtherToMe].sort(
-        (a, b) => new Date(a.sentAt) - new Date(b.sentAt)
-      );
-      socket.emit("All_chat_Solo", allMessages);
     } catch (error) {
       console.error("Error fetching clerk user ID:", error);
     }
   });
+
+  socket.on("get_user_status",()=>{
+    io.emit("user_online_status", { userId: socket.myuserid, status: true });
+  }
+  )
+  socket.on("Give_Me_old_chats",async()=>{
+    const messagesFromMeToOther = await prisma.chat.findMany({
+      where: { sender: socket.myuserid, receiver: socket.userId },
+      orderBy: { sentAt: "asc" },
+    });
+
+    const messagesFromOtherToMe = await prisma.chat.findMany({
+      where: { sender: socket.userId, receiver: socket.myuserid },
+      orderBy: { sentAt: "asc" },
+    });
+
+    const allMessages = [...messagesFromMeToOther, ...messagesFromOtherToMe].sort(
+      (a, b) => new Date(a.sentAt) - new Date(b.sentAt)
+    );
+    socket.emit("Giving_old_chats", allMessages);
+
+  })
 
   socket.on("send_msg", async (IMsgData) => {
     console.log(IMsgData, "DATA");
