@@ -25,7 +25,7 @@ const handleSetUserId = async (socket, prisma, userId) => {
     try {
       const me = await prisma.user.findUnique({
         where: { clerkUserId: ClerkuserId },
-        select: { id: true, imageUrl: true, FirstName: true, LastName: true, clerkUserId: true },
+        select: { id: true, imageUrl: true, FirstName: true, LastName: true, clerkUserId: true,newUser:true },
       });
       socket.myuserid = me.id;
       if (socket.myuserid) {
@@ -38,6 +38,8 @@ const handleSetUserId = async (socket, prisma, userId) => {
           clerkuserId: me.clerkUserId,
           status: true,
         });
+        const verified=me.newUser
+        socket.emit("profile_status",verified)
         io.emit("current_online_usersID", Array.from(onlineUsers));
       }
     } catch (error) {
